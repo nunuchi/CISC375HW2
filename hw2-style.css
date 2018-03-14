@@ -21,7 +21,7 @@ body {
 	text-align: center;
 	color: #f9f9f9;
 	text-shadow: 2px 2px 4px #000011;
-	
+
 }
 
 #page-footer {
@@ -36,4 +36,15 @@ body {
 #map {
 	height: 400px;
 	width: 100%;
+}
+
+#textLocation
+{
+	display: inline;
+	position: relative;
+}
+
+#textLocation p{
+	margin: 0px;
+	padding: 0px;
 }
