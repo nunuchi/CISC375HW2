@@ -1,0 +1,39 @@
+html {
+	margin: 0;
+	font-size: 62.5%;
+	min-height: 100%;
+}
+
+body {
+	font-size: 1.8rem;
+	margin: 0;
+	background-color: #e0caca;
+	font-family: "Arial", "Helvetica", sans-serif;
+	color: #4c4141;
+}
+
+#page-header {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	margin: 0;
+	text-align: center;
+	color: #f9f9f9;
+	text-shadow: 2px 2px 4px #000011;
+	
+}
+
+#page-footer {
+	position: relative;
+	left: 0;
+	bottom: 0;
+	width: 100%;
+	background-color: #d99898bf;
+	padding: 0 0 2em 2em;
+}
+
+#map {
+	height: 400px;
+	width: 100%;
+}
