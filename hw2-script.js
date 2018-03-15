@@ -9,3 +9,11 @@ function initMap() {
 		map: map
 	});
 }
+
+
+var app = angular.module('myApp', []);
+app.controller('aqCtrl', function($scope, $http) {
+  $http.get("https://api.openaq.org/v1/cities").then(function (response) {
+      $scope.myData = response.data.results;
+  });
+});

@@ -3,9 +3,9 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 	<link rel="stylesheet" type="text/css" href="hw2-style.css">
   	<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC3FDWsmJtGTDHcOyDIG-VEfiKz99M-DN0&callback=initMap" type="text/javascript"></script>
+  	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
 
 
 	<script type="text/javascript" src="hw2-script.js"></script>
@@ -13,11 +13,23 @@
 </head>
 <body>
 	<h1> Google Maps </h1>
+	
 	<div id="textLocation">
-		<p>Input a Location</p>
-		<input type="text" placeholder="Input Location">
+	<p>Input a Location</p>
+	<input type="text" placeholder="Input Location">
 	</div>
+
 	<div id="map"></div>
+
+
+<div ng-app="myApp" ng-controller="aqCtrl"> 
+<ul>
+  <li ng-repeat="x in myData">
+    {{ 'city:' + x.city + ' country: ' + x.country + ' locations: ' + x.locations + ' count: ' + x.count }}
+  </li>
+</ul>
+
+</div>
 
 </body>
 </html>
