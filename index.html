@@ -4,30 +4,50 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel="stylesheet" type="text/css" href="hw2-style.css">
-  	<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC3FDWsmJtGTDHcOyDIG-VEfiKz99M-DN0&callback=initMap" type="text/javascript"></script>
+  	
   	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
 
-
 	<script type="text/javascript" src="hw2-script.js"></script>
+
+	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC3FDWsmJtGTDHcOyDIG-VEfiKz99M-DN0&libraries=places&callback=initAutocomplete" async defer></script>
+
 	<title>Air Quality Map</title>
 </head>
 <body>
-	<h1> Google Maps </h1>
-	
-	<div id="textLocation">
-	<p>Input a Location</p>
-	<input type="text" placeholder="Input Location">
+	<div id="page-header">
+		<h1> Google Maps </h1>
+		<a class="unlink float-right" href="#">About the Coders</a>
 	</div>
+	<p>Note: I've been using the tutorials to get things to work, but they probably won't work as intended unless we edit some stuff. The important work left to be done is as follows:</p>
+	<ul>
+		<li>Input box text should update with new location (city name, lat/lon coordinates, ...) when map is panned</li>
+		<li>Table should automatically update data based on location shown in map
+		+Should account for both center and zoom level</li>
+		<li>About Page information</li>
+	</ul>
+	
 
+	<input id="pac-input" class="controls" type="text" placeholder="Search Box">
 	<div id="map"></div>
 
 
 <div ng-app="myApp" ng-controller="aqCtrl"> 
-<ul>
-  <li ng-repeat="x in myData">
-    {{ 'city:' + x.city + ' country: ' + x.country + ' locations: ' + x.locations + ' count: ' + x.count }}
-  </li>
-</ul>
+<table>
+	<tr>
+		<th>City</th>
+		<th>Country</th>
+		<th>Longitude</th>
+		<th>Latitude</th>
+		<th>Parameter</th>
+	</tr>
+	<tr ng-repeat="x in myData">
+		<td>{{x.city}}</td>
+		<td>{{x.country}}</td>
+		<td>{{x.coordinates.longitude}}</td>
+		<td>{{x.coordinates.latitude}}</td>
+		<td>{{x.parameter}}</td>
+	</tr>
+</table>
 
 </div>
 
