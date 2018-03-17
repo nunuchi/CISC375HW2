@@ -6,8 +6,9 @@ html {
 
 body {
 	font-size: 1.8rem;
+	padding: 5em 0;
 	margin: 0;
-	background-color: #e0caca;
+	background-color: #faf4f4;
 	font-family: "Arial", "Helvetica", sans-serif;
 	color: #4c4141;
 }
@@ -21,7 +22,8 @@ body {
 	text-align: center;
 	color: #f9f9f9;
 	text-shadow: 2px 2px 4px #000011;
-
+	background-color: #b7b7b7;
+	
 }
 
 #page-footer {
@@ -38,13 +40,33 @@ body {
 	width: 100%;
 }
 
-#textLocation
-{
-	display: inline;
-	position: relative;
+#flex-box {
+	display: flex;
+	flex-direction: row;
+	width: 100%;
+	padding: 1em
+	background-color: #e0baba;
 }
 
-#textLocation p{
-	margin: 0px;
-	padding: 0px;
+#column1 {
+	width: 50%
+}
+
+#column2 {
+	width: 50%
+}
+
+.imgVW {
+	width: 50vw;
+}
+
+.unlink {
+	text-decoration: none;
+	color: inherit;
+}
+
+.float-right {
+	position: relative;
+	float: right;
+	padding: 0 1em 0 0;
 }
