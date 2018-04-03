@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+
+	<style>	
+	#map {
+	height: 400px;
+	width: 100%;
+	}
+	#user_input {
+		width: 300px;
+	}
+	</style>
+</head>
+<body>
+	<h1>My Google Map</h1>
+	<input id="user_input" class="controls" type="text" placeholder="Enter a location">
+	<div id="map"></div>
+
+	<script type="text/javascript">
+	function initMap(){
+		//The map options
+		var options = {
+			zoom: 8,
+			center: {lat: -33.8688, lng: 151.2195}
+		}
+		//Create new map
+		var map = new google.maps.Map(document.getElementById('map'), options);
+
+
+		//add a listener, that changes the user_input to the center of where they are on the map
+		map.addListener('center_changed', function() {
+		var center = map.getCenter();
+		var latitude = center.lat();
+		var longitude = center.lng();
+		document.getElementById("user_input").value = latitude+','+longitude;
+		});
+
+		var input = document.getElementById('user_input').value;
+		input = input.split(',');
+		alert(input[0]+','+input[1]);
+		
+		
+		
+		//https://api.openaq.org/v1/measurements?coordinates=28.63576,77.22445&radius=2500, example of coor + radius
+
+		//Array of markers
+		var markersArray = 
+		[
+			{	
+				coord:{lat: -33.8688, lng: 151.2195}, 
+				iconImage:'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png',
+				content:'<h1>City, State</h1>'
+			},
+			{	
+				coord:{lat: -36, lng: 150},
+				content:'<h1>City, State</h1>'
+			},
+			{	
+				coord:{lat: -27, lng: 150},
+				content:'<h1>City, State</h1>'
+			},
+		];
+
+		for(var i = 0; i < markersArray.length; i++) {
+			addMarker(markersArray[i]);
+		}//for(var i = 0; i < markersArray.length; i++)
+
+
+		/*addMarker({coord:{lat: -32, lng: 150}});
+		addMarker({	coord:{lat: -33, lng: 150}, 
+					iconImage:'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png',
+					content:'<h1>City, State</h1>'
+					});*/
+
+
+	//Map Markers, have to insert positions into the markers
+	//position: {lat: x, lng: y}, where to place the marker
+	//map:map, which map to set the marker
+	//icon: 'https.png', to set icons for different markers
+		function addMarker(property){
+			var marker = new google.maps.Marker({
+				position: property.coord,
+				map: map,
+
+			});
+
+			//Check for if Icon value exists
+			if(property.iconImage){ //Sets IconImage of the Marker
+				marker.setIcon(property.iconImage);
+			}//if(property.iconImage)
+
+			//Check for if Content value exists
+			if(property.content){//Sets the Content to the Marker
+				var infoWindow = new google.maps.InfoWindow({
+					content:property.content
+				});
+
+				//adds a click listener to the Marker, showing the Content
+				marker.addListener('click', function(){
+					infoWindow.open(map, marker);
+				});
+			}//if(property.content)
+		}//function addMarker(property)
+	}//function initMap()
+
+	</script>
+
+	<script async defer 
+		src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC3FDWsmJtGTDHcOyDIG-VEfiKz99M-DN0&callback=initMap"></script>
+
+</body>
+</html>
