@@ -99,7 +99,7 @@ part of how to use the api*/
 	color: #f9f9f9;
 	text-shadow: 2px 2px 4px #000011;
 	background-color: #b7b7b7;
-	
+
 }
 
 #page-footer {
@@ -145,4 +145,9 @@ part of how to use the api*/
 	position: relative;
 	float: right;
 	padding: 0 1em 0 0;
+}
+
+#about-webpage {
+	padding-left: .75rem;
+	padding-right: .75rem;
 }
