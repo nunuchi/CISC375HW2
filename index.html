@@ -18,17 +18,44 @@
 	<ul>
 		<li>Input box text should update with new location (city name, lat/lon coordinates, ...) when map is panned</li>
 	</ul>
+	<div id="allFilters">
+	<h3><u>Filters</u></h3>
+	<div id="particles">
+		<h4>Particles:
+		<select>
+			<option value="pm25">PM25</option>
+			<option value="pm10">PM10</option>
+			<option value="so2">S02</option>
+			<option value="no2">NO2</option>
+			<option value="o3">O3</option>
+			<option value="co">CO</option>
+			<option value="bc">BC</option>
+		</select>
+		</h4>
+	</div>
+	<div id="particleRange">
+	<h4>Particle Range: <input type="text" placeholder="Highest Value">
+	<input type="text" placeholder="Lowest Value"></h4>
+
+	</div>
+	<div id="numDays">
+		<h4>Days Since Today (max 90 days): <input type="number" min="0" max="90" placeholder="Number of past days"></h4>
+		<button type="button">Apply</button>
+	</div>
+</div>
+<br>
 	<input id="user_input" class="controls" type="text" placeholder="Enter a location"><button type="button" onclick="">Enter</button>
+
 	<div id="map"></div>
 
 	<script type="text/javascript" src='hw2-script.js'>
 
 	</script>
 
-	<script async defer 
+	<script async defer
 		src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC3FDWsmJtGTDHcOyDIG-VEfiKz99M-DN0&callback=initMap"></script>
 
-		<div ng-app="myApp" ng-controller="aqCtrl"> 
+		<div ng-app="myApp" ng-controller="aqCtrl">
 <table>
 	<tr>
 		<th>City</th>
