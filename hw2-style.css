@@ -135,7 +135,8 @@ part of how to use the api*/
 }
 
 .imgVW {
-	width: 50vw;
+	height: auto;
+	width: 45vw;
 }
 
 .unlink {
