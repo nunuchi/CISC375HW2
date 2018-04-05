@@ -1,9 +1,69 @@
-  var app = angular.module('myApp', []);
+ var app = angular.module('myApp', []);
+ var scope;
+ var http_data;
+ var newCoord;
+ var backup;
+ var coordArray;
+ var coordArray2;
+ var paramArray;
+ var valueArray;
+ var selectedDate;
+ var particle;
+ var particleMax;
+ var particleMin;
+ var days;
+ var usedDate;
 app.controller('aqCtrl', function($scope, $http) {
-  $http.get("https://api.openaq.org/v1/measurements").then(function (response) {
-      $scope.myData = response.data.results;
+  $http.get("https://api.openaq.org/v1/measurements?coordinates=-34,151&radius=200000&limit=100").then(function (response) {
+       $scope.myData = response.data.results;
+       console.log("test A");
+
+  }); //first get
+
+$scope.updateTable = function() { //updates the table
+  $http.get("https://api.openaq.org/v1/measurements?coordinates="+newCoord+"&radius=200000").then(function (response) {
+      if (response.data.results.length>0){
+       $scope.myData = response.data.results;
+       console.log(response.data.results.length);
+       coordArray = [];
+       coordArray2 = [];
+       paramArray = [];
+       valueArray = [];
+        for(i = 0; i<response.data.results.length; i++){
+       
+          var j1 = JSON.parse(JSON.stringify(response.data.results[i]));
+          var stringCoords = JSON.stringify(j1["coordinates"]);
+          var stringCoords2 = stringCoords.split('/').join(',').split('"').join(',').split(':').join(',').split(' ').join(',').split('{').join(',').split('}').join(',').split(',');
+          coordArray.push(stringCoords2[4]);
+          coordArray2.push(stringCoords2[8]);
+          console.log(stringCoords2[4]+','+stringCoords2[8]);
+
+          var j2 = JSON.parse(JSON.stringify(response.data.results[i]));
+          var stringParam = JSON.stringify(j2["parameter"]);
+          var stringParam2 = stringParam.split('/').join(',').split('"').join(',').split(':').join(',').split(' ').join(',').split('{').join(',').split('}').join(',').split(',');
+          paramArray.push(stringParam2);
+          
+          console.log(stringParam2[1]);
+
+          var j3 = JSON.parse(JSON.stringify(response.data.results[i]));
+          var stringValue = JSON.stringify(j3["value"]);
+          var stringValue2 = stringValue.split('/').join(',').split('"').join(',').split(':').join(',').split(' ').join(',').split('{').join(',').split('}').join(',').split(',');
+          valueArray.push(stringValue2);
+          
+          console.log(stringValue2[0]);
+
+        }//for(i = 0; i<response.data.results.length; i++){
+       
+     }
+       
   });
+  }// update
+$scope.getCoords = function() { // curently unused
+  return $scope.myData;
+}
+
 });
+
   function initMap(){
     //The map options
     var options = {
@@ -19,7 +79,8 @@ app.controller('aqCtrl', function($scope, $http) {
     var center = map.getCenter();
     var latitude = center.lat();
     var longitude = center.lng();
-    document.getElementById("user_input").value = latitude+','+longitude;
+    document.getElementById("user_input").value = latitude;
+    document.getElementById("user_input2").value = longitude;
     });
 
 
@@ -29,23 +90,65 @@ app.controller('aqCtrl', function($scope, $http) {
 
 
     var input = document.getElementById('user_input');
+    var input2 = document.getElementById('user_input2');
     input.addEventListener('keyup', function(event) {
-      var input2 = input.value;
-      var inputSplit = input2.split(',');
-
+      var inputx = input.value;
+      var input2x = input2.value;
+      
+      if(inputx==null||input2x==null) {alert('please enter a latitude and longitude format');}
       if (event.keyCode === 13) {
-        var latLng = new google.maps.LatLng(inputSplit[0], inputSplit[1])
+        var latLng = new google.maps.LatLng(inputx,input2x);
         map.panTo(latLng);
-        alert(inputSplit[0]+','+inputSplit[1]);
+        change(inputx,input2x);
       }
     });
 
+    var filterItems = document.getElementById('filterButton'); //gets filter Data
+    filterItems.addEventListener('click', function(event) {
 
-    map.setCenter({lat:75,lng:150});
+      particle = document.getElementById('particles').value;
+      particleMax = document.getElementById('particleRange').value;
+      particleMin = document.getElementById('particleRangeMin').value;
+      days = document.getElementById('numDays').value;
+
+      if(!particle) {particle2 = "";}
+      else {particle = "&parameter="+particle;}
+
+      if(!particleMax) {particleMax2 = "";}
+      else {particleMax = "&value_to="+particleMax;}
+
+      if(!particleMin) {particleMin2 = "";}
+      else {particleMin = "&value_from="+particleMin;}
+
+      if(!days) {days = "";}
+      else {
+        var today = new Date();
+        var prevDate = new Date(today);
+        prevDate.setDate(today.getDate - days);
+        var dd = prevDate.getDate();
+        var mm = prevDate.getMonth()+1;
+        var yyyy = prevDate.getFullYear();
+        if(dd<10){
+            dd='0'+dd;
+        } 
+        if(mm<10){
+        mm='0'+mm;
+        } 
+        var prevDate = yyyy+'/'+mm+'/'+dd;
+        usedDate = prevDate;
+
+      }
+
+
+      alert(particle+''+particleMax+''+particleMin+''+days);
+    });//Filter Data End
+    
 
     //https://api.openaq.org/v1/measurements?coordinates=28.63576,77.22445&radius=2500, example of coor + radius
 
     //Array of markers
+    var markersArray = [];
+
     var markersArray = 
     [
       { 
@@ -104,4 +207,44 @@ app.controller('aqCtrl', function($scope, $http) {
 
       }//if(property.content)
     }//function addMarker(property)
+
   }//function initMap()
+
+// function change(latitude,longitude) {
+//   var appElement = document.querySelector('[ng-app=myApp]');
+//   var $scope = angular.element(appElement).scope();
+//   $scope = $scope.$$childHead;
+//   var $http = angular.injector(["ng"]).get("$http");
+//   $http.get("https://api.openaq.org/v1/measurements").then(function (response) {
+//        $scope.myData = response.data.results;
+//        http_data = $scope.myData;
+
+//        console.log('hello');
+//        $scope.$apply(function(){$scope.myData=http_data;});
+//        console.log('after apply')
+
+//   });
+// }
+
+// app.controller('aqCtrl', function($scope, $http) {
+//   $http.get("https://api.openaq.org/v1/measurements?coordinates=-34,151&radius=200000&limit=100").then(function (response) {
+//        $scope.myData = response.data.results;
+
+//   });
+// });
+
+function change(latitude,longitude) {
+  var appElement = document.querySelector('[ng-app=myApp]');
+  var $scope = angular.element(appElement).scope();
+  $scope = $scope.$$childHead;
+  newCoord = latitude+','+longitude;
+  $scope.$apply(function(){$scope.updateTable();});
+}
+
+function getCoordinatesMarkers() {
+  var appElement = document.querySelector('[ng-app=myApp]');
+  var $scope = angular.element(appElement).scope();
+  $scope = $scope.$$childHead;
+
+  $scope.$apply(function(){$scope.markersMaker();});
+}
