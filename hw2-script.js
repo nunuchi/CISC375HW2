@@ -1,4 +1,7 @@
  var app = angular.module('myApp', []);
+ var options;
+ var map;
+
  var scope;
  var http_data;
  var newCoord;
@@ -13,6 +16,10 @@
  var particleMin;
  var days;
  var usedDate;
+ var jsonArray;
+ var markersArray = [];
+
+ //end of variables
 app.controller('aqCtrl', function($scope, $http) {
   $http.get("https://api.openaq.org/v1/measurements?coordinates=-34,151&radius=200000&limit=100").then(function (response) {
        $scope.myData = response.data.results;
@@ -20,7 +27,7 @@ app.controller('aqCtrl', function($scope, $http) {
 
   }); //first get
 
-$scope.updateTable = function() { //updates the table
+$scope.updateTable = function() { //updates the table, this is an Angular function that can be called
   $http.get("https://api.openaq.org/v1/measurements?coordinates="+newCoord+"&radius=200000").then(function (response) {
       if (response.data.results.length>0){
        $scope.myData = response.data.results;
@@ -29,13 +36,14 @@ $scope.updateTable = function() { //updates the table
        coordArray2 = [];
        paramArray = [];
        valueArray = [];
+       jsonArray = [];
         for(i = 0; i<response.data.results.length; i++){
        
           var j1 = JSON.parse(JSON.stringify(response.data.results[i]));
           var stringCoords = JSON.stringify(j1["coordinates"]);
           var stringCoords2 = stringCoords.split('/').join(',').split('"').join(',').split(':').join(',').split(' ').join(',').split('{').join(',').split('}').join(',').split(',');
-          coordArray.push(stringCoords2[4]);
-          coordArray2.push(stringCoords2[8]);
+          coordArray.push(parseFloat(stringCoords2[4]));
+          coordArray2.push(parseFloat(stringCoords2[8]));
           console.log(stringCoords2[4]+','+stringCoords2[8]);
 
           var j2 = JSON.parse(JSON.stringify(response.data.results[i]));
@@ -52,8 +60,17 @@ $scope.updateTable = function() { //updates the table
           
           console.log(stringValue2[0]);
 
+          jsonArray.push({
+            "content":stringParam2[1]+" "+stringValue2+"µg/m³",
+            "coordinates":{lat:stringCoords2[4],lng:stringCoords2[8]}}); //end jsonArray push
         }//for(i = 0; i<response.data.results.length; i++){
-       
+          markersArray = [];
+          markersArray = jsonArray
+          for(var i = 0; i < markersArray.length; i++) {
+            console.log(markersArray[i]);
+            addMarker(markersArray[i]);
+          }//for(var i = 0; i < markersArray.length; i++)
+       console.log(jsonArray);
      }
        
   });
@@ -66,12 +83,12 @@ $scope.getCoords = function() { // curently unused
 
   function initMap(){
     //The map options
-    var options = {
+    options = {
       zoom: 8,
       center: {lat: -33.8688, lng: 151.2195}
     }
     //Create new map
-    var map = new google.maps.Map(document.getElementById('map'), options);
+    map = new google.maps.Map(document.getElementById('map'), options);
 
 
     //add a listener, that changes the user_input to the center of where they are on the map
@@ -95,7 +112,7 @@ $scope.getCoords = function() { // curently unused
       var inputx = input.value;
       var input2x = input2.value;
       
-      if(inputx==null||input2x==null) {alert('please enter a latitude and longitude format');}
+      if(inputx==null||input2x==null) {alert('Please enter a latitude and longitude!');}
       if (event.keyCode === 13) {
         var latLng = new google.maps.LatLng(inputx,input2x);
         map.panTo(latLng);
@@ -147,28 +164,6 @@ $scope.getCoords = function() { // curently unused
     //https://api.openaq.org/v1/measurements?coordinates=28.63576,77.22445&radius=2500, example of coor + radius
 
     //Array of markers
-    var markersArray = [];
-
-    var markersArray = 
-    [
-      { 
-        coord:{lat: -33.8688, lng: 151.2195}, 
-        iconImage:'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png',
-        content:'<h1>City, State</h1>'
-      },
-      { 
-        coord:{lat: -36, lng: 150},
-        content:'<h1>City, State</h1>'
-      },
-      { 
-        coord:{lat: -27, lng: 150},
-        content:'<h1>City, State</h1>'
-      },
-    ];
-
-    for(var i = 0; i < markersArray.length; i++) {
-      addMarker(markersArray[i]);
-    }//for(var i = 0; i < markersArray.length; i++)
 
 
     /*addMarker({coord:{lat: -32, lng: 150}});
@@ -182,12 +177,26 @@ $scope.getCoords = function() { // curently unused
   //position: {lat: x, lng: y}, where to place the marker
   //map:map, which map to set the marker
   //icon: 'https.png', to set icons for different markers
-    function addMarker(property){
-      var marker = new google.maps.Marker({
-        position: property.coord,
-        map: map,
 
-      });
+  }//function initMap()
+
+function change(latitude,longitude) {
+  var appElement = document.querySelector('[ng-app=myApp]');
+  var $scope = angular.element(appElement).scope();
+  $scope = $scope.$$childHead;
+  newCoord = latitude+','+longitude;
+  $scope.$apply(function(){$scope.updateTable().then(this);});
+}
+
+function addMarker(property){
+  console.log('addMarker Area')
+  console.log(property.coordinates.lat);
+  var markerCoords = {lat: parseFloat(property.coordinates.lat), lng: parseFloat(property.coordinates.lng)};
+  var marker = new google.maps.Marker({
+  position: markerCoords,
+  map: map,
+
+  });
 
       //Check for if Icon value exists
       if(property.iconImage){ //Sets IconImage of the Marker
@@ -207,44 +216,3 @@ $scope.getCoords = function() { // curently unused
 
       }//if(property.content)
     }//function addMarker(property)
-
-  }//function initMap()
-
-// function change(latitude,longitude) {
-//   var appElement = document.querySelector('[ng-app=myApp]');
-//   var $scope = angular.element(appElement).scope();
-//   $scope = $scope.$$childHead;
-//   var $http = angular.injector(["ng"]).get("$http");
-//   $http.get("https://api.openaq.org/v1/measurements").then(function (response) {
-//        $scope.myData = response.data.results;
-//        http_data = $scope.myData;
-
-//        console.log('hello');
-//        $scope.$apply(function(){$scope.myData=http_data;});
-//        console.log('after apply')
-
-//   });
-// }
-
-// app.controller('aqCtrl', function($scope, $http) {
-//   $http.get("https://api.openaq.org/v1/measurements?coordinates=-34,151&radius=200000&limit=100").then(function (response) {
-//        $scope.myData = response.data.results;
-
-//   });
-// });
-
-function change(latitude,longitude) {
-  var appElement = document.querySelector('[ng-app=myApp]');
-  var $scope = angular.element(appElement).scope();
-  $scope = $scope.$$childHead;
-  newCoord = latitude+','+longitude;
-  $scope.$apply(function(){$scope.updateTable();});
-}
-
-function getCoordinatesMarkers() {
-  var appElement = document.querySelector('[ng-app=myApp]');
-  var $scope = angular.element(appElement).scope();
-  $scope = $scope.$$childHead;
-
-  $scope.$apply(function(){$scope.markersMaker();});
-}
