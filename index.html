@@ -5,6 +5,9 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+	
+	<script src="src/markerclusterer.js"></script>
+	<script type="text/javascript" src="src/data.json"></script>
 
 	<link rel="stylesheet" type="text/css" href="hw2-style.css">
 </head>
@@ -14,15 +17,12 @@
 		<h1> Google Maps </h1>
 		<a class="unlink float-right" href="https://faul7249.github.io//CISC375HW2/about.html">About the Coders</a>
 	</div>
-	<p>Note: I've been using the tutorials to get things to work, but they probably won't work as intended unless we edit some stuff. The important work left to be done is as follows:</p>
-	<ul>
-		<li>Input box text should update with new location (city name, lat/lon coordinates, ...) when map is panned</li>
-	</ul>
 		<div id="allFilters">
 	<h3><u>Filters</u></h3>
 	
 		<h4>Particles:
 		<select id="particles">
+			<option value="all">All</option>
 			<option value="pm25">PM25</option>
 			<option value="pm10">PM10</option>
 			<option value="so2">S02</option>
@@ -36,11 +36,12 @@
 	<div>
 	<h4>Particle Range: <input id="particleRange" type="number" min="0" placeholder="Highest Value">
 	<input id="particleRangeMin" type="number" min="0" placeholder="Lowest Value"></h4>
+	<button id="particleButton">Range Filter</button>
 
 	</div>
 	<div>
 		<h4>Days Since Today (max 90 days): <input id="numDays" type="number" min="0" max="90" placeholder="Number of past days"></h4>
-		<button id="filterButton" type="button">Apply</button>
+		<button id="filterButton" type="button">Filtered Search</button>
 	</div>
 </div>
 </div>
@@ -55,27 +56,29 @@
 	</script>
 
 	<script async defer 
-		src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC3FDWsmJtGTDHcOyDIG-VEfiKz99M-DN0&callback=initMap"></script>
+		src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC3FDWsmJtGTDHcOyDIG-VEfiKz99M-DN0&libraries=visualization&callback=initMap"></script>
 
 		<div ng-app="myApp" ng-controller="aqCtrl"> 
 			<button  ng-click="updateTable()">click</button>
-<table>
+<table id="coordTable">
 	<tr>
 		<th>City</th>
 		<th>Country</th>
-		<th>Longitude</th>
 		<th>Latitude</th>
+		<th>Longitude</th>
 		<th>Parameter</th>
 		<th>Value</th>
+		<th>Unit</th>
 		<th>Date</th>
 	</tr>
 	<tr ng-repeat="x in myData">
 		<td>{{x.city}}</td>
 		<td>{{x.country}}</td>
-		<td>{{x.coordinates.longitude}}</td>
 		<td>{{x.coordinates.latitude}}</td>
+		<td>{{x.coordinates.longitude}}</td>
 		<td>{{x.parameter}}</td>
-		<td>{{x.value}} {{x.unit}}</td>
+		<td>{{x.value}}</td>
+		<td>{{x.unit}}</td>
 		<td>{{x.date.utc}}</td>
 	</tr>
 </table>
