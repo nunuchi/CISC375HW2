@@ -8,6 +8,8 @@
  var particleMax2 = '';
  var particleMin2 = '';
  var usedDate ='';
+ var globalRadius ='100000'
+
 
  var scope;
  var http_data;
@@ -26,20 +28,21 @@
  var markersArray = [];
  var unitArray;
  
-
+ var markers4Cluster;
+ var markerclusterer;
  //end of variables
 app.controller('aqCtrl', function($scope, $http) {// sets up an angular controllers
-  $http.get("https://api.openaq.org/v1/measurements?coordinates=-34,151&radius=200000&limit=100").then(function (response) {
+  $http.get("https://api.openaq.org/v1/measurements?coordinates=-34,151&radius=200000&limit=1000").then(function (response) {
        $scope.myData = response.data.results;
-       console.log("test A");
+       
 
   }); //first get
 
 $scope.updateTable = function() { //updates the table, this is an Angular function that can be called... just for coords anyways
-  $http.get("https://api.openaq.org/v1/measurements?coordinates="+newCoord+"&radius=200000&limit=100").then(function (response) {
+  $http.get("https://api.openaq.org/v1/measurements?coordinates="+newCoord+"&radius="+globalRadius+"&limit=10000").then(function (response) {
       if (response.data.results.length>0){
        $scope.myData = response.data.results;
-       console.log(response.data.results.length);
+       
        coordArray = [];
        coordArray2 = [];
        paramArray = [];
@@ -54,14 +57,14 @@ $scope.updateTable = function() { //updates the table, this is an Angular functi
           coordArray.push(parseFloat(stringCoords2[4]));
           coordArray2.push(parseFloat(stringCoords2[8]));
           
-          console.log(stringCoords2[4]+','+stringCoords2[8]);
+          
 
           var j2 = JSON.parse(JSON.stringify(response.data.results[i]));
           var stringParam = JSON.stringify(j2["parameter"]);
           var stringParam2 = stringParam.split('/').join(',').split('"').join(',').split(':').join(',').split(' ').join(',').split('{').join(',').split('}').join(',').split(',');
           paramArray.push(stringParam2);
           
-          console.log(stringParam2[1]);
+          
 
           var j3 = JSON.parse(JSON.stringify(response.data.results[i]));
           var stringValue = JSON.stringify(j3["value"]);
@@ -73,7 +76,7 @@ $scope.updateTable = function() { //updates the table, this is an Angular functi
           var unitValue2 = unitValue.split('/').join(',').split('"').join(',').split(':').join(',').split(' ').join(',').split('{').join(',').split('}').join(',').split(',');
           unitArray.push(unitValue2);
           
-          console.log(stringValue2[0]);
+          
           
           jsonArray.push({
             "content":stringParam2[1]+" {"+stringValue2+" "+unitValue2+"}",
@@ -82,23 +85,22 @@ $scope.updateTable = function() { //updates the table, this is an Angular functi
         }//for(i = 0; i<response.data.results.length; i++){
           markersArray = [];
           markersArray = jsonArray
+          markers4Cluster = [];
           for(var i = 0; i < markersArray.length; i++) {
-            console.log(markersArray[i]);
+            
             addMarker(markersArray[i]);
           }//for(var i = 0; i < markersArray.length; i++)
-          
-          console.log(jsonArrayCopy);
-          
-       console.log(jsonArray);
+          if(markerclusterer) {markerclusterer.setMap(null);}
+          markerclusterer = new MarkerClusterer(map, markers4Cluster, {imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'});
      }
        
   });
   }// update
 $scope.filterData = function() { //updates the table, this is an Angular function that can be called, for a filtered update
-  $http.get("https://api.openaq.org/v1/measurements?coordinates="+newCoord+''+particle2+''+particleMin2+''+particleMax2+"&radius=200000&limit=100").then(function (response) {
+  $http.get("https://api.openaq.org/v1/measurements?coordinates="+newCoord+''+particle2+''+particleMin2+''+particleMax2+"&radius="+globalRadius+"&limit=100").then(function (response) {
       if (response.data.results.length>0){
        $scope.myData = response.data.results;
-       console.log(response.data.results.length);
+       
        coordArray = [];
        coordArray2 = [];
        paramArray = [];
@@ -135,12 +137,13 @@ $scope.filterData = function() { //updates the table, this is an Angular functio
         }//for(i = 0; i<response.data.results.length; i++){
           markersArray = [];
           markersArray = jsonArray
+          markers4Cluster = [];
           for(var i = 0; i < markersArray.length; i++) {
-            console.log(markersArray[i]);
+            
             addMarker(markersArray[i]);
           }//for(var i = 0; i < markersArray.length; i++)
      }
-       
+          
   });
   }// update 2
 
@@ -149,7 +152,7 @@ $scope.filterData = function() { //updates the table, this is an Angular functio
   function initMap(){
     //The map options
     options = {
-      zoom: 7,
+      zoom: 5,
       center: {lat: -33.8688, lng: 151.2195},
       mapTypeId: 'satellite'
     }
@@ -251,9 +254,8 @@ $scope.filterData = function() { //updates the table, this is an Angular functio
 
       var newlatitude = document.getElementById('user_input').value;
       var newlongitude = document.getElementById('user_input2').value;
-      console.log(newlatitude+''+newlongitude+''+particle2+particleMin2+particleMax2+usedDate);
-      console.log(yyyy+'/'+mm+'/'+dd);
-      console.log(today);
+      var latLng = new google.maps.LatLng(newlatitude,newlongitude);
+      map.panTo(latLng);
       changeFilter(newlatitude,newlongitude);
     });//Filter Data End
     
@@ -278,6 +280,7 @@ $scope.filterData = function() { //updates the table, this is an Angular functio
   }//function initMap()
 
 function change(latitude,longitude) { //update the table by calling in the scope
+  zoomPointer();
   var appElement = document.querySelector('[ng-app=myApp]');
   var $scope = angular.element(appElement).scope();
   $scope = $scope.$$childHead;
@@ -286,6 +289,7 @@ function change(latitude,longitude) { //update the table by calling in the scope
 }
 
 function changeFilter(latitude,longitude) { //update the table by calling in the scope
+  zoomPointer();
   var appElement = document.querySelector('[ng-app=myApp]');
   var $scope = angular.element(appElement).scope();
   $scope = $scope.$$childHead;
@@ -294,8 +298,7 @@ function changeFilter(latitude,longitude) { //update the table by calling in the
 }
 
 function addMarker(property){ /// add markers to the map
-  console.log('addMarker Area')
-  console.log(property.coordinates.lat);
+  
   var markerCoords = {lat: parseFloat(property.coordinates.lat), lng: parseFloat(property.coordinates.lng)};
   var marker = new google.maps.Marker({
   position: markerCoords,
@@ -324,7 +327,7 @@ function addMarker(property){ /// add markers to the map
         })
 
       }//if(property.content)
-
+      markers4Cluster.push(marker);
     }//function addMarker(property)
 
 function filterTable() {//filter by particles
@@ -356,7 +359,7 @@ function filterTable() {//filter by particles
     }
   }//for
   
-  console.log(heatMapData);
+  
   if (typeof(heatMap)=='object') {heatMap.setMap(null);}
   heatMap = new google.maps.visualization.HeatmapLayer({
     data: heatMapData
@@ -417,3 +420,14 @@ function filterTableDays() {//filter by day
 }//function filterTable() {
 
 
+function zoomPointer (){//sets the globalRadius to use based on map zoom level
+  var checkZoom = map.getZoom();
+  console.log(checkZoom);
+  if(checkZoom < 3) {globalRadius=2000000;}
+  else if(checkZoom > 2 && checkZoom <5) {globalRadius=1500000;}
+  else if(checkZoom > 4 && checkZoom <7) {globalRadius=800000;}
+  else if(checkZoom > 6 && checkZoom <9) {globalRadius=300000;}
+  else if(checkZoom > 8 && checkZoom <11) {globalRadius=150000;}
+  else {globalRadius=100000;}
+
+}//function zoomPointer ()
