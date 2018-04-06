@@ -16,6 +16,11 @@ body {
 table, th, td{
 	border: 2px solid black;
 }
+#gradient {
+    height: 50px;
+    background: linear-gradient(-90deg, red, yellow, green);
+    width: 20vw;
+}
 
 #infowindow-content .title {
     font-weight: bold;

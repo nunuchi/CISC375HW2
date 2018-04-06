@@ -43,19 +43,19 @@
 		<h4>Days Since Today (max 90 days): <input id="numDays" type="number" min="0" max="90" placeholder="Number of past days"></h4>
 		<button id="filterButton" type="button">Filtered Search</button>
 	</div>
-	<p>Note:Filtered Search should work, but it might take awhile to load if it doesn't crash anyways. Remeber to empty the fields to restrict the search.</p>
+	<p><strong>Note:</strong>Filtered Search should work, but it might take awhile to load if it doesn't crash anyways. Remember to empty the fields to restrict the search.</p>
 </div>
 </div>
 
 
 	<input id="user_input" class="controls" type="text" placeholder="Enter a x" input type="number">
 	<input id="user_input2" class="controls" type="text" placeholder="Enter a y" input type="number">
-	<div id="map"></div> <p><strong>Heat Map Legend:</strong>Green = Low, Red = High --- Change filter particle to make it show!</p>
+	<div id="map"></div> <p><strong>Heat Map Legend:</strong>Green = Low, Yellow - Medium, Red = High --- Change filter particle to make it show!</p> <div id='gradient'></div>
 
 	<script type="text/javascript" src='hw2-script.js'>
 
 	</script>
-	<p>Note: First Data is always retrieved and shown, if not shown then wait until it pops up before doing a search to make sure the Angular scope isn't empty</p>
+	<p><strong>Note:</strong> First Data is always retrieved and shown, if not shown then wait until it pops up before doing a search to make sure the Angular scope isn't empty</p>
 	<script async defer 
 		src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC3FDWsmJtGTDHcOyDIG-VEfiKz99M-DN0&libraries=visualization&callback=initMap"></script>
 
