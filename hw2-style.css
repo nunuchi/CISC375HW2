@@ -17,7 +17,7 @@ table, th, td{
 	border: 2px solid black;
 }
 
-#description {
+/*#description {
   font-family: Roboto;
   font-size: 15px;
   font-weight: 300;
@@ -86,7 +86,7 @@ table, th, td{
 }
 #target {
 	width: 345px;
-}
+}*/
 /*code taken from https://developers.google.com/maps/documentation/javascript/examples/places-searchbox
 part of how to use the api*/
 #page-header {
@@ -99,7 +99,8 @@ part of how to use the api*/
 	color: #f9f9f9;
 	text-shadow: 2px 2px 4px #000011;
 	background-color: #b7b7b7;
-
+	font-size: 1.5rem;
+	
 }
 
 #page-footer {
@@ -113,10 +114,10 @@ part of how to use the api*/
 
 #map {
 	height: 400px;
-	width: 100%;
+	width: 50%;
 }
 #user_input {
-	width: 300px;
+	
 }
 #flex-box {
 	display: flex;
@@ -127,17 +128,16 @@ part of how to use the api*/
 }
 
 #column1 {
-	width: 50%
+	width: 49vw;
 }
 
 #column2 {
-	width: 50%
+	width: 49vw;
 }
 
 .imgVW {
-	padding-left: 3rem;
 	height: 30vw;
-	width: 35vw;
+	width: 45vw;
 }
 
 .unlink {
@@ -156,33 +156,9 @@ part of how to use the api*/
 	width: 50rem;
 	padding-left: 1rem;
 	padding-bottom: 1rem;
+	
 	float: right;
 }
 #numDays input{
 		width: 20rem;
-}
-
-#videoCenter {
-	margin:auto;
-}
-
-#about-webpage p {
-	width: 115rem;
-	margin: auto;
-	padding-bottom: 1rem;
-}
-
-#Para
-{
-	padding-left: 2rem;
-	width: 50rem;
-}
-
-#flex-box  h1
-{
-	padding-left: 1rem;
-	padding-top: 1rem;
-}
-a:hover{
-	color: #13c176;
 }

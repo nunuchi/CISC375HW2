@@ -35,8 +35,8 @@ app.controller('aqCtrl', function($scope, $http) {// sets up an angular controll
 
   }); //first get
 
-$scope.updateTable = function() { //updates the table, this is an Angular function that can be called
-  $http.get("https://api.openaq.org/v1/measurements?coordinates="+newCoord+''+particle2+''+particleMin2+''+particleMax2+"&radius=200000&limit=100").then(function (response) {
+$scope.updateTable = function() { //updates the table, this is an Angular function that can be called... just for coords anyways
+  $http.get("https://api.openaq.org/v1/measurements?coordinates="+newCoord+"&radius=200000&limit=100").then(function (response) {
       if (response.data.results.length>0){
        $scope.myData = response.data.results;
        console.log(response.data.results.length);
@@ -94,17 +94,64 @@ $scope.updateTable = function() { //updates the table, this is an Angular functi
        
   });
   }// update
-$scope.filterData = function() { // curently unused
-  return $scope.myData;
-}
+$scope.filterData = function() { //updates the table, this is an Angular function that can be called, for a filtered update
+  $http.get("https://api.openaq.org/v1/measurements?coordinates="+newCoord+''+particle2+''+particleMin2+''+particleMax2+"&radius=200000&limit=100").then(function (response) {
+      if (response.data.results.length>0){
+       $scope.myData = response.data.results;
+       console.log(response.data.results.length);
+       coordArray = [];
+       coordArray2 = [];
+       paramArray = [];
+       valueArray = [];
+       jsonArray = [];
+       unitArray = [];
+        for(i = 0; i<response.data.results.length; i++){//gets specific values for the markers, so content and coords
+       
+          var j1 = JSON.parse(JSON.stringify(response.data.results[i]));
+          var stringCoords = JSON.stringify(j1["coordinates"]);
+          var stringCoords2 = stringCoords.split('/').join(',').split('"').join(',').split(':').join(',').split(' ').join(',').split('{').join(',').split('}').join(',').split(',');
+          coordArray.push(parseFloat(stringCoords2[4]));
+          coordArray2.push(parseFloat(stringCoords2[8]));
+          
+          var j2 = JSON.parse(JSON.stringify(response.data.results[i]));
+          var stringParam = JSON.stringify(j2["parameter"]);
+          var stringParam2 = stringParam.split('/').join(',').split('"').join(',').split(':').join(',').split(' ').join(',').split('{').join(',').split('}').join(',').split(',');
+          paramArray.push(stringParam2);
+          
+          var j3 = JSON.parse(JSON.stringify(response.data.results[i]));
+          var stringValue = JSON.stringify(j3["value"]);
+          var stringValue2 = stringValue.split('/').join(',').split('"').join(',').split(':').join(',').split(' ').join(',').split('{').join(',').split('}').join(',').split(',');
+          valueArray.push(stringValue2);
+
+          var j4 = JSON.parse(JSON.stringify(response.data.results[i]));
+          var unitValue = JSON.stringify(j3["unit"]);
+          var unitValue2 = unitValue.split('/').join(',').split('"').join(',').split(':').join(',').split(' ').join(',').split('{').join(',').split('}').join(',').split(',');
+          unitArray.push(unitValue2);
+          
+          jsonArray.push({
+            "content":stringParam2[1]+" {"+stringValue2+" "+unitValue2+"}",
+            "coordinates":{lat:stringCoords2[4],lng:stringCoords2[8]}}); //end jsonArray push
+          jsonArrayCopy.push(parseInt(stringCoords2[4]),parseInt(stringCoords2[8]));
+        }//for(i = 0; i<response.data.results.length; i++){
+          markersArray = [];
+          markersArray = jsonArray
+          for(var i = 0; i < markersArray.length; i++) {
+            console.log(markersArray[i]);
+            addMarker(markersArray[i]);
+          }//for(var i = 0; i < markersArray.length; i++)
+     }
+       
+  });
+  }// update 2
 
 });
 
   function initMap(){
     //The map options
     options = {
-      zoom: 8,
-      center: {lat: -33.8688, lng: 151.2195}
+      zoom: 7,
+      center: {lat: -33.8688, lng: 151.2195},
+      mapTypeId: 'satellite'
     }
     //Create new map
     map = new google.maps.Map(document.getElementById('map'), options);
@@ -174,7 +221,7 @@ $scope.filterData = function() { // curently unused
       particleMin = document.getElementById('particleRangeMin').value;
       days = document.getElementById('numDays').value;
 
-      if(!particle) {particle2 = "";}
+      if(!particle||particle=='all') {particle2 = "";}
       else {particle2 = "&parameter="+particle;}
 
       if(!particleMax) {particleMax2 = "";}
@@ -207,7 +254,7 @@ $scope.filterData = function() { // curently unused
       console.log(newlatitude+''+newlongitude+''+particle2+particleMin2+particleMax2+usedDate);
       console.log(yyyy+'/'+mm+'/'+dd);
       console.log(today);
-      change(newlatitude,newlongitude);
+      changeFilter(newlatitude,newlongitude);
     });//Filter Data End
     
 
@@ -236,6 +283,14 @@ function change(latitude,longitude) { //update the table by calling in the scope
   $scope = $scope.$$childHead;
   newCoord = latitude+','+longitude;
   $scope.$apply(function(){$scope.updateTable().then(this);});
+}
+
+function changeFilter(latitude,longitude) { //update the table by calling in the scope
+  var appElement = document.querySelector('[ng-app=myApp]');
+  var $scope = angular.element(appElement).scope();
+  $scope = $scope.$$childHead;
+  newCoord = latitude+','+longitude;
+  $scope.$apply(function(){$scope.filterData().then(this);});
 }
 
 function addMarker(property){ /// add markers to the map
@@ -295,7 +350,7 @@ function filterTable() {//filter by particles
       if (td.innerHTML == filter) {
         var latlat = 
         heatMapData.push({location: new google.maps.LatLng(parseFloat(tr[i].getElementsByTagName('td')[2].innerHTML), parseFloat(tr[i].getElementsByTagName('td')[3].innerHTML)), 
-        weight: parseFloat(tr[i].getElementsByTagName('td')[5].innerHTML)}
+        weight: parseFloat(tr[i].getElementsByTagName('td')[5].innerHTML)*10}
         );
       } 
     }

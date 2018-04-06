@@ -43,6 +43,7 @@
 		<h4>Days Since Today (max 90 days): <input id="numDays" type="number" min="0" max="90" placeholder="Number of past days"></h4>
 		<button id="filterButton" type="button">Filtered Search</button>
 	</div>
+	<p>Note:Filtered Search should work, but it might take awhile to load if it doesn't crash anyways. Remeber to empty the fields to restrict the search.</p>
 </div>
 </div>
 
@@ -54,12 +55,12 @@
 	<script type="text/javascript" src='hw2-script.js'>
 
 	</script>
-
+	<p>Note: First Data is always retrieved and shown, if not shown then wait until it pops up before doing a search to make sure the Angular scope isn't empty</p>
 	<script async defer 
 		src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC3FDWsmJtGTDHcOyDIG-VEfiKz99M-DN0&libraries=visualization&callback=initMap"></script>
 
 		<div ng-app="myApp" ng-controller="aqCtrl"> 
-			<button  ng-click="updateTable()">click</button>
+			
 <table id="coordTable">
 	<tr>
 		<th>City</th>
