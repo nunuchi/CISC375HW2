@@ -366,6 +366,7 @@ function filterTable() {//filter by particles
   });
 
   heatMap.setMap(map);
+  heatMap.set('radius', heatMap.get('radius') ? null : 20)
 
 
 }//function filterTable() {
