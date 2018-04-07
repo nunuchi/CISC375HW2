@@ -97,7 +97,7 @@ $scope.updateTable = function() { //updates the table, this is an Angular functi
   });
   }// update
 $scope.filterData = function() { //updates the table, this is an Angular function that can be called, for a filtered update
-  $http.get("https://api.openaq.org/v1/measurements?coordinates="+newCoord+''+particle2+''+particleMin2+''+particleMax2+"&radius="+globalRadius+"&limit=100").then(function (response) {
+  $http.get("https://api.openaq.org/v1/measurements?coordinates="+newCoord+''+particle2+''+particleMin2+''+particleMax2+"&radius="+globalRadius+"&limit=10000").then(function (response) {
       if (response.data.results.length>0){
        $scope.myData = response.data.results;
        
